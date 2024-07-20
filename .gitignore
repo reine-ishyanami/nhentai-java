@@ -1,0 +1,13 @@
+# Gradle
+.gradle
+build/
+/gradle/wrapper/gradle-wrapper.jar
+
+# IDEA
+.idea/
+
+# Other
+/7z
+*.jpg
+*.png
+app.yml

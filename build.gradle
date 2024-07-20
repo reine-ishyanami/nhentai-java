@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.reine'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation("com.microsoft.playwright:playwright:1.45.0")
+    implementation 'ch.qos.logback:logback-classic:1.5.6'
+    implementation 'org.yaml:snakeyaml:2.2'
+    compileOnly( "org.projectlombok:lombok:1.18.30")
+    annotationProcessor( "org.projectlombok:lombok:1.18.30")
+    implementation 'org.apache.commons:commons-compress:1.26.0' // 请使用最新版本
+    implementation 'org.tukaani:xz:1.9' // 请使用最新版本
+    implementation 'net.bytebuddy:byte-buddy:1.14.18'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes('Main-Class': 'com.reine.Main')
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
