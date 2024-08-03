@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+import static com.reine.utils.ByteBuddyDynamicProxy.proxy;
+
 /**
  * 使用 HttpClient 进行请求的工具类
  *
@@ -35,7 +37,7 @@ public class HttpClientRequests {
     private final HttpClient client;
 
     @Getter
-    private static final HttpClientRequests requests = ByteBuddyDynamicProxy.timerProxy(new HttpClientRequests());
+    private static final HttpClientRequests requests = proxy(new HttpClientRequests());
 
     private static final Profile profile = Profile.getProfile();
 

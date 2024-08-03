@@ -8,7 +8,6 @@ import com.reine.entity.HentaiHref;
 import com.reine.entity.HentaiStore;
 import com.reine.site.SiteAction;
 import com.reine.utils.BrowserManager;
-import com.reine.utils.ByteBuddyDynamicProxy;
 import com.reine.utils.DirectoryTo7z;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +18,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import static com.reine.utils.PlaywrightRequests.antiCloudflare;
+import static com.reine.utils.ByteBuddyDynamicProxy.proxy;
 
 /**
  * <a href="https://nhentai.net">...</a> 网站爬虫
@@ -34,7 +33,7 @@ import static com.reine.utils.PlaywrightRequests.antiCloudflare;
 public class NHentaiSiteAction implements SiteAction {
 
     @Getter
-    private static final NHentaiSiteAction instance = ByteBuddyDynamicProxy.timerProxy(new NHentaiSiteAction());
+    private static final NHentaiSiteAction instance = proxy(new NHentaiSiteAction());
 
     private final Pattern pattern = Pattern.compile(getProfile().getLanguage());
 

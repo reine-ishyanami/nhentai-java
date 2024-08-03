@@ -16,14 +16,25 @@ tasks.withType(JavaCompile).configureEach {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    implementation("com.microsoft.playwright:playwright:1.45.0")
-    implementation 'ch.qos.logback:logback-classic:1.5.6'
-    implementation 'org.yaml:snakeyaml:2.2'
+    implementation("com.microsoft.playwright:playwright:1.45.0")  // playwright
+    implementation 'ch.qos.logback:logback-classic:1.5.6'  // 日志
+    implementation 'org.yaml:snakeyaml:2.2'  // 读取yaml配置文件
     compileOnly( "org.projectlombok:lombok:1.18.30")
     annotationProcessor( "org.projectlombok:lombok:1.18.30")
-    implementation 'org.apache.commons:commons-compress:1.26.0' // 请使用最新版本
-    implementation 'org.tukaani:xz:1.9' // 请使用最新版本
-    implementation 'net.bytebuddy:byte-buddy:1.14.18'
+    implementation 'org.apache.commons:commons-compress:1.26.0' // 打包用
+    implementation 'org.tukaani:xz:1.9'
+    implementation 'net.bytebuddy:byte-buddy:1.14.18'  // 动态代理用
+    implementation 'info.picocli:picocli:4.7.6'  // 命令行程序
+}
+
+tasks.register("download", JavaExec.class){
+    group = 'exec'
+    // 设置主类的全限定名
+    mainClass = 'com.reine.Downloader'
+    // 设置类路径
+    classpath = sourceSets.main.runtimeClasspath
+    // 如果需要，可以添加 JVM 参数
+    jvmArgs = ['-Dfile.encoding=UTF-8']
 }
 
 test {
@@ -32,7 +43,7 @@ test {
 
 jar {
     manifest {
-        attributes('Main-Class': 'com.reine.Main')
+        attributes('Main-Class': 'com.reine.Downloader')
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
     from {

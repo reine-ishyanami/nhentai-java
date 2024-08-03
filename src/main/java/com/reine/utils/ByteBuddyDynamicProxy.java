@@ -15,7 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 public class ByteBuddyDynamicProxy {
 
     @SuppressWarnings("unchecked")
-    public static <T> T timerProxy(T target) {
+    public static <T> T proxy(T target) {
         try (DynamicType.Unloaded<?> make = new ByteBuddy()
                 .subclass(target.getClass())
                 .method(ElementMatchers.any())
