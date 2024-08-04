@@ -28,6 +28,8 @@ dependencies {
     implementation("com.microsoft.playwright:playwright:1.45.0")  // playwright
     compileOnly( "org.projectlombok:lombok:1.18.30")
     annotationProcessor( "org.projectlombok:lombok:1.18.30")
+    implementation files('src/main/resources/lib/zip4j-2.11.5.jar')
+
 }
 
 dependencyManagement {

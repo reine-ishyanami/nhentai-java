@@ -19,11 +19,11 @@ public class Profile {
     /**
      * 是否压缩
      */
-    private Boolean compress = false;
+    private Boolean compress = true;
     /**
      * 压缩密码
      */
-    private String password = "";
+    private String password = "123456789wwwqqq";
     /**
      * 语言
      */
@@ -43,5 +43,5 @@ public class Profile {
     /**
      * 下载根路径
      */
-    private String rootDir = ".";
+    private String rootDir = "./dImage/";
 }

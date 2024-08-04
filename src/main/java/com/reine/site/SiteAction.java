@@ -2,8 +2,11 @@ package com.reine.site;
 
 import com.reine.entity.FailResult;
 import com.reine.entity.HentaiDetail;
+import net.lingala.zip4j.model.enums.AesKeyStrength;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -39,6 +42,6 @@ public interface SiteAction {
      *
      * @return 成功与否
      */
-    boolean packageTo7z() throws IOException;
+    boolean packageTo7z(String zipName, URI folder, String passWord, EncryptionMethod encryptionMethod, AesKeyStrength aesKeyStrength) throws IOException;
 
 }

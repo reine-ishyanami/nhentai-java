@@ -14,9 +14,14 @@ import com.reine.utils.PlaywrightRequests;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.model.enums.AesKeyStrength;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import java.io.File;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -43,15 +48,30 @@ public class NHentaiSiteAction implements SiteAction {
     private final PlaywrightRequests playwright;
 
     private final BrowserManager browserManager;
+    private HentaiDetail hentaiDetail;
+    private String hentaiName;
+    @Getter
+    private List<FailResult> failList = new ArrayList<>();
+
+    private static void getAllFiles(File fileInput, List<File> allFileList) {
+        // 获取文件列表
+        File[] fileList = fileInput.listFiles();
+        assert fileList != null;
+        for (File file : fileList) {
+            if (file.isDirectory()) {
+                // 递归处理文件夹
+                getAllFiles(file, allFileList);
+            } else {
+                // 如果是文件则将其加入到文件数组中
+                allFileList.add(file);
+            }
+        }
+    }
 
     @Override
     public String baseUrl() {
         return "https://i3.nhentai.net/galleries";
     }
-
-    private HentaiDetail hentaiDetail;
-
-    private String hentaiName;
 
     @Timer
     @Override
@@ -67,9 +87,6 @@ public class NHentaiSiteAction implements SiteAction {
         hentaiDetail = getHentaiDetail(new String(rsp2, StandardCharsets.UTF_8));
         return hentaiDetail;
     }
-
-    @Getter
-    private List<FailResult> failList = new ArrayList<>();
 
     @Timer
     @Override
@@ -89,8 +106,27 @@ public class NHentaiSiteAction implements SiteAction {
     }
 
     @Override
-    public boolean packageTo7z() throws IOException {
-        throw new UnsupportedOperationException();
+    public boolean packageTo7z(String zipName, URI folder, String passWord, EncryptionMethod encryptionMethod, AesKeyStrength aesKeyStrength) {
+        log.info("开始压缩");
+        log.debug("source文件夹: {},password:{},加密方法：{},AesKeyStrength:{}", folder, passWord, encryptionMethod.name(), aesKeyStrength.name());
+
+        var zip = new ZipParameters();
+        zip.setEncryptFiles(true);
+        zip.setEncryptionMethod(encryptionMethod);
+        if (encryptionMethod == EncryptionMethod.AES) {
+            zip.setAesKeyStrength(aesKeyStrength);
+        }
+        zip.setDefaultFolderPath(profile.getRootDir());
+        try (var zipFile = new ZipFile(profile.getRootDir()+zipName + ".zip", passWord.toCharArray())) {
+            List<File> allFileList = new ArrayList<>();
+            getAllFiles(new File(folder), allFileList);
+            zipFile.addFiles(allFileList, zip);
+            log.info("压缩完成,path:{},size:{}",zipFile.getFile().getAbsolutePath(),zipFile.getFile().length()/1024+"MB");
+        } catch (Exception IOException) {
+            log.error("压缩失败", IOException);
+        }
+        // throw new UnsupportedOperationException();
+        return true;
     }
 
     /**
