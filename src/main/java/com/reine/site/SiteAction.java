@@ -1,9 +1,7 @@
 package com.reine.site;
 
-import com.reine.config.Profile;
 import com.reine.entity.FailResult;
 import com.reine.entity.HentaiDetail;
-import com.reine.utils.HttpClientRequests;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,21 +41,4 @@ public interface SiteAction {
      */
     boolean packageTo7z() throws IOException;
 
-    /**
-     * 获取用户自定义配置
-     *
-     * @return 用户自定义配置
-     */
-    default Profile getProfile() {
-        return Profile.getProfile();
-    }
-
-    /**
-     * http请求客户端
-     *
-     * @return http请求客户端
-     */
-    default HttpClientRequests requests() {
-        return HttpClientRequests.getRequests();
-    }
 }

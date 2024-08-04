@@ -2,6 +2,10 @@ package com.reine.utils;
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Playwright;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import lombok.Getter;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
@@ -9,23 +13,22 @@ import java.util.Optional;
  * @author reine
  * 2024/7/17 23:56
  */
+@Component
 public class BrowserManager {
 
-    private static Browser browser;
+    @Getter
+    private Browser browser;
 
-    private static Playwright playwright;
+    private Playwright playwright;
 
-    private static Browser startBrowser() {
+    @PostConstruct
+    private void startBrowser() {
         playwright = Playwright.create();
         browser = playwright.firefox().launch();
-        return browser;
     }
 
-    public static Browser getBrowser() {
-        return Optional.ofNullable(browser).orElse(startBrowser());
-    }
-
-    public static void closeBrowser() {
+    @PreDestroy
+    public void closeBrowser() {
         Optional.ofNullable(browser)
                 .ifPresent(Browser::close);
         Optional.ofNullable(playwright)

@@ -1,9 +1,11 @@
 package com.reine.utils;
 
-import com.reine.config.Profile;
+import com.reine.properties.Profile;
 import com.reine.entity.FailResult;
 import com.reine.entity.HentaiStore;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.net.ssl.SSLContext;
@@ -21,9 +23,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
-
-import static com.reine.utils.ByteBuddyDynamicProxy.proxy;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 使用 HttpClient 进行请求的工具类
@@ -31,15 +34,14 @@ import static com.reine.utils.ByteBuddyDynamicProxy.proxy;
  * @author reine
  * 2024/7/18 15:25
  */
+@RequiredArgsConstructor
 @Slf4j
 public class HttpClientRequests {
 
     private final HttpClient client;
 
-    @Getter
-    private static final HttpClientRequests requests = proxy(new HttpClientRequests());
-
-    private static final Profile profile = Profile.getProfile();
+    @Setter
+    private Profile profile;
 
     public HttpClientRequests() {
         client = httpClientWithoutSSL();

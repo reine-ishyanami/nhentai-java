@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    include: private
+  application:
+    name: hentai downloader
+  shell:
+    interactive:
+      enabled: true
+    script:
+      enabled: true

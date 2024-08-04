@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'org.springframework.boot' version "3.3.1"
+    id 'io.spring.dependency-management' version "1.1.6"
 }
 
 group = 'com.reine'
@@ -9,46 +11,31 @@ repositories {
     mavenCentral()
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation 'org.springframework.shell:spring-shell-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation("com.microsoft.playwright:playwright:1.45.0")  // playwright
-    implementation 'ch.qos.logback:logback-classic:1.5.6'  // 日志
-    implementation 'org.yaml:snakeyaml:2.2'  // 读取yaml配置文件
     compileOnly( "org.projectlombok:lombok:1.18.30")
     annotationProcessor( "org.projectlombok:lombok:1.18.30")
-    implementation 'org.apache.commons:commons-compress:1.26.0' // 打包用
-    implementation 'org.tukaani:xz:1.9'
-    implementation 'net.bytebuddy:byte-buddy:1.14.18'  // 动态代理用
-    implementation 'info.picocli:picocli:4.7.6'  // 命令行程序
 }
 
-tasks.register("download", JavaExec.class){
-    group = 'exec'
-    // 设置主类的全限定名
-    mainClass = 'com.reine.Downloader'
-    // 设置类路径
-    classpath = sourceSets.main.runtimeClasspath
-    // 如果需要，可以添加 JVM 参数
-    jvmArgs = ['-Dfile.encoding=UTF-8']
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.shell:spring-shell-dependencies:3.3.1"
+    }
 }
 
-test {
+tasks.named('test') {
     useJUnitPlatform()
-}
-
-jar {
-    manifest {
-        attributes('Main-Class': 'com.reine.Downloader')
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    }
-    from {
-        configurations.runtimeClasspath.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
 }

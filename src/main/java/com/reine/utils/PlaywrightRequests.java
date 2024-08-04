@@ -1,7 +1,9 @@
 package com.reine.utils;
 
 import com.reine.exception.RequestException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
@@ -11,8 +13,12 @@ import java.util.Objects;
  * @author reine
  * 2024/7/17 23:55
  */
+@Component
 @Slf4j
+@RequiredArgsConstructor
 public class PlaywrightRequests {
+
+    private final BrowserManager browserManager;
 
     /**
      * 试图绕过cf5s盾
@@ -20,8 +26,8 @@ public class PlaywrightRequests {
      * @param url
      * @return
      */
-    public static byte[] antiCloudflare(String url) throws RequestException {
-        var browser = BrowserManager.getBrowser();
+    public byte[] antiCloudflare(String url) throws RequestException {
+        var browser = browserManager.getBrowser();
         try (var browserContext = browser.newContext();
              var page = browserContext.newPage()) {
             var response = page.navigate(url);
