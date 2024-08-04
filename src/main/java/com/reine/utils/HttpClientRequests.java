@@ -1,8 +1,8 @@
 package com.reine.utils;
 
-import com.reine.properties.Profile;
 import com.reine.entity.FailResult;
 import com.reine.entity.HentaiStore;
+import com.reine.properties.Profile;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**

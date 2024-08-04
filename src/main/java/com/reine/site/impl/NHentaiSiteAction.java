@@ -2,11 +2,11 @@ package com.reine.site.impl;
 
 import com.microsoft.playwright.Locator;
 import com.reine.annotation.Timer;
-import com.reine.properties.Profile;
 import com.reine.entity.FailResult;
 import com.reine.entity.HentaiDetail;
 import com.reine.entity.HentaiHref;
 import com.reine.entity.HentaiStore;
+import com.reine.properties.Profile;
 import com.reine.site.SiteAction;
 import com.reine.utils.BrowserManager;
 import com.reine.utils.HttpClientRequests;
@@ -44,7 +44,6 @@ public class NHentaiSiteAction implements SiteAction {
 
     private final BrowserManager browserManager;
 
-
     @Override
     public String baseUrl() {
         return "https://i3.nhentai.net/galleries";
@@ -63,9 +62,7 @@ public class NHentaiSiteAction implements SiteAction {
         log.info("搜索中 {}", url);
         var rsp1 = playwright.antiCloudflare(url);
         List<HentaiHref> hentaiHrefs = listHentaiGalleries(new String(rsp1, StandardCharsets.UTF_8));
-        HentaiHref target = hentaiHrefs.stream()
-                .filter(hentaiHref -> pattern.matcher(hentaiHref.title()).find())
-                .findFirst().orElseThrow(() -> new RuntimeException("not found"));
+        HentaiHref target = hentaiHrefs.stream().filter(hentaiHref -> pattern.matcher(hentaiHref.title()).find()).findFirst().orElseThrow(() -> new RuntimeException("not found"));
         var rsp2 = playwright.antiCloudflare(target.href());
         hentaiDetail = getHentaiDetail(new String(rsp2, StandardCharsets.UTF_8));
         return hentaiDetail;
@@ -77,11 +74,13 @@ public class NHentaiSiteAction implements SiteAction {
     @Timer
     @Override
     public List<FailResult> download() {
-        if (!Path.of(hentaiName).toFile().mkdirs()) {
+        if (!Path.of(profile.getRootDir(), hentaiName).toFile().mkdirs()) {
             log.error("目录 {} 已存在。", hentaiName);
         }
-        List<CompletableFuture<Void>> futures = hentaiDetail.imgList().stream()
-                .map(img -> new HentaiStore("%s/%s/%s".formatted(baseUrl(), hentaiDetail.gallery(), img), Path.of(hentaiName, img)))
+        List<CompletableFuture<Void>> futures = hentaiDetail.imgList()
+                .stream()
+                .map(img -> new HentaiStore("%s/%s/%s".formatted(baseUrl(), hentaiDetail.gallery(), img),
+                        Path.of(profile.getRootDir(), hentaiName, img)))
                 .map(img -> requests.downloadImage(img, 0)).toList();
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[]{})).join();
         log.info("下载完成");
@@ -102,8 +101,7 @@ public class NHentaiSiteAction implements SiteAction {
      */
     private List<HentaiHref> listHentaiGalleries(String html) {
         var browser = browserManager.getBrowser();
-        try (var browserContext = browser.newContext();
-             var page = browserContext.newPage()) {
+        try (var browserContext = browser.newContext(); var page = browserContext.newPage()) {
             page.setContent(html);
             var resList = new ArrayList<HentaiHref>();
             for (Locator locator : page.locator(".gallery").all()) {
@@ -123,18 +121,13 @@ public class NHentaiSiteAction implements SiteAction {
      */
     private HentaiDetail getHentaiDetail(String html) {
         var browser = browserManager.getBrowser();
-        try (var browserContext = browser.newContext();
-             var page = browserContext.newPage()) {
+        try (var browserContext = browser.newContext(); var page = browserContext.newPage()) {
             page.setContent(html);
-            var srcUrl = page.locator("#cover").locator("img")
-                    .getAttribute("data-src");
+            var srcUrl = page.locator("#cover").locator("img").getAttribute("data-src");
             String[] split = srcUrl.split("/");
             var gallery = split[split.length - 2];
             var resList = new ArrayList<String>();
-            for (Locator div : page.locator("#thumbnail-container")
-                    .locator(".thumbs")
-                    .locator(".thumb-container")
-                    .all()) {
+            for (Locator div : page.locator("#thumbnail-container").locator(".thumbs").locator(".thumb-container").all()) {
                 srcUrl = div.locator("img").getAttribute("data-src");
                 split = srcUrl.split("/");
                 String[] img = split[split.length - 1].split("\\.");

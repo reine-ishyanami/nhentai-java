@@ -12,34 +12,36 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(prefix = "download.config")
 public class Profile {
-
     /**
      * 文件后缀
      */
-    private String suffix;
+    private String suffix = "jpg";
     /**
      * 是否压缩
      */
-    private Boolean compress;
+    private Boolean compress = false;
     /**
      * 压缩密码
      */
-    private String password;
+    private String password = "";
     /**
      * 语言
      */
-    private String language;
+    private String language = "Chinese";
     /**
      * 压缩文件目录
      */
-    private String compressDir;
+    private String compressDir = "7z";
     /**
      * 下载过程中，如果文件已存在，是否替换原有的文件
      */
-    private Boolean replaceFile;
+    private Boolean replaceFile = false;
     /**
      * 下载过程重试次数
      */
-    private Integer retryTime;
-
+    private Integer retryTime = 5;
+    /**
+     * 下载根路径
+     */
+    private String rootDir = ".";
 }
