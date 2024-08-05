@@ -28,7 +28,8 @@ dependencies {
     implementation("com.microsoft.playwright:playwright:1.45.0")  // playwright
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
-    implementation ('net.lingala.zip4j:zip4j:2.11.5')
+    implementation('net.lingala.zip4j:zip4j:2.11.5')
+    implementation('org.apache.pdfbox:pdfbox:3.0.2')
 
 }
 

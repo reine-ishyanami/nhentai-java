@@ -2,6 +2,7 @@ package com.reine.cmd;
 
 import com.reine.properties.Profile;
 import com.reine.site.SiteAction;
+import com.reine.utils.PdfUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;
@@ -9,6 +10,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 
 /**
@@ -37,11 +39,34 @@ public class Downloader {
             try {
                 action.packageTo7z();
             } catch (IOException e) {
-                log.error("打包失败:{}", e.getMessage());
+                log.error("打包失败");
+            }
+        }
+        if (profile.getConvertPdf()) {
+            try {
+                action.convertToPdf();
+            } catch (IOException e) {
+                log.error("转换失败");
             }
         }
     }
 
+    /**
+     * 将一组图片转换成 pdf
+     *
+     * @param path 图片路径
+     * @param name pdf 名称
+     */
+    @ShellMethod(key = "convert", value = "convert hentai to pdf")
+    public void convert(@ShellOption(help = "hentai images path") String path,
+                        @ShellOption(help = "pdf name") String name) {
+        log.info(path);
+        try {
+            PdfUtils.convertToPdf(Path.of(path), Path.of(profile.getPdfDir(), name + ".pdf"));
+        } catch (IOException e) {
+            log.error("转换失败");
+        }
+    }
 
 
     /**

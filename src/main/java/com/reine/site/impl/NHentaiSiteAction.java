@@ -8,14 +8,10 @@ import com.reine.entity.HentaiHref;
 import com.reine.entity.HentaiStore;
 import com.reine.properties.Profile;
 import com.reine.site.SiteAction;
-import com.reine.utils.BrowserManager;
-import com.reine.utils.Compress;
-import com.reine.utils.HttpClientRequests;
-import com.reine.utils.PlaywrightRequests;
+import com.reine.utils.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.lingala.zip4j.exception.ZipException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -75,10 +71,13 @@ public class NHentaiSiteAction implements SiteAction {
         return hentaiDetail;
     }
 
+    private Path hentaiPath;
+
     @Timer
     @Override
     public List<FailResult> download() {
-        if (!Path.of(profile.getRootDir(), hentaiName).toFile().mkdirs()) {
+        hentaiPath = Path.of(profile.getRootDir(), hentaiName);
+        if (!hentaiPath.toFile().mkdirs()) {
             log.error("目录 {} 已存在。", hentaiName);
         }
         List<CompletableFuture<Void>> futures = hentaiDetail.imgList()
@@ -95,6 +94,11 @@ public class NHentaiSiteAction implements SiteAction {
     @Override
     public boolean packageTo7z() throws IOException {
         return compress.packageToZip(hentaiName);
+    }
+
+    @Override
+    public boolean convertToPdf() throws IOException {
+        return PdfUtils.convertToPdf(hentaiPath, Path.of(profile.getPdfDir(), hentaiName+".pdf"));
     }
 
     /**

@@ -41,4 +41,10 @@ public interface SiteAction {
      */
     boolean packageTo7z() throws IOException;
 
+    /**
+     * 将文件夹中的所有图片合并成单个 pdf 文件
+     * @return 成功与否
+     */
+    boolean convertToPdf() throws IOException;
+
 }

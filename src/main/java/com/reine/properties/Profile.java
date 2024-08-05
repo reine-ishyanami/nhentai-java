@@ -56,5 +56,13 @@ public class Profile {
      * 压缩文件分片大小，单位MB，0表示不分片
      */
     private Integer compressSplitSize = 0;
+    /**
+     * 存放 pdf 的路径
+     */
+    private String pdfDir = "pdf";
+    /**
+     * 是否转换成 PDF
+     */
+    private Boolean convertPdf = false;
 
 }
