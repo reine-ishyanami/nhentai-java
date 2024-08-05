@@ -15,8 +15,10 @@ import com.reine.utils.PlaywrightRequests;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.exception.ZipException;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -88,7 +90,7 @@ private final Compress compress;
     }
 
     @Override
-    public boolean packageTo7z() {
+    public boolean packageTo7z() throws IOException {
         return compress.packageToZip(hentaiName);
     }
 
