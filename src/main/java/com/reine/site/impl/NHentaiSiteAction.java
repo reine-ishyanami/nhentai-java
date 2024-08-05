@@ -9,11 +9,13 @@ import com.reine.entity.HentaiStore;
 import com.reine.properties.Profile;
 import com.reine.site.SiteAction;
 import com.reine.utils.BrowserManager;
+import com.reine.utils.Compress;
 import com.reine.utils.HttpClientRequests;
 import com.reine.utils.PlaywrightRequests;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.exception.ZipException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -44,14 +46,19 @@ public class NHentaiSiteAction implements SiteAction {
 
     private final BrowserManager browserManager;
 
+    private HentaiDetail hentaiDetail;
+
+    private String hentaiName;
+
+    @Getter
+    private List<FailResult> failList = new ArrayList<>();
+
+    private final Compress compress;
+
     @Override
     public String baseUrl() {
         return "https://i3.nhentai.net/galleries";
     }
-
-    private HentaiDetail hentaiDetail;
-
-    private String hentaiName;
 
     @Timer
     @Override
@@ -67,9 +74,6 @@ public class NHentaiSiteAction implements SiteAction {
         hentaiDetail = getHentaiDetail(new String(rsp2, StandardCharsets.UTF_8));
         return hentaiDetail;
     }
-
-    @Getter
-    private List<FailResult> failList = new ArrayList<>();
 
     @Timer
     @Override
@@ -90,7 +94,7 @@ public class NHentaiSiteAction implements SiteAction {
 
     @Override
     public boolean packageTo7z() throws IOException {
-        throw new UnsupportedOperationException();
+        return compress.packageToZip(hentaiName);
     }
 
     /**

@@ -26,6 +26,7 @@ public class Downloader {
 
     /**
      * 下载hentai
+     *
      * @param name hentai名称
      */
     @ShellMethod(key = "download", value = "download hentai")
@@ -36,13 +37,16 @@ public class Downloader {
             try {
                 action.packageTo7z();
             } catch (IOException e) {
-                log.error("打包失败");
+                log.error("打包失败:{}", e.getMessage());
             }
         }
     }
 
+
+
     /**
      * 设置下载路径
+     *
      * @param dir 下载路径
      * @return 更新成功
      */
@@ -54,6 +58,7 @@ public class Downloader {
 
     /**
      * 设置压缩密码
+     *
      * @param password 压缩密码
      * @return 更新成功
      */
