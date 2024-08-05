@@ -19,11 +19,11 @@ public class Profile {
     /**
      * 是否压缩
      */
-    private Boolean compress = true;
+    private Boolean compress = false;
     /**
-     * 压缩密码
+     * 压缩密码,为空即不进行加密，反之亦然
      */
-    private String password = "123456789wwwqqq";
+    private String password = "";
     /**
      * 语言
      */
@@ -43,5 +43,19 @@ public class Profile {
     /**
      * 下载根路径
      */
-    private String rootDir = "./dImage/";
+    private String rootDir = ".";
+    /**
+     * 1:ZIP_STANDARD
+     * 2:ZIP_STANDARD_VARIANT_STRONG
+     * 3:AES_128
+     * 4:AES_192
+     * 5:AES_256
+     */
+    private byte encryptionMethod = 3;
+    /***
+     *  压缩文件分片大小，单位MB，0表示不分片
+     *
+     */
+    private int compressSplitSize = 0;
+
 }

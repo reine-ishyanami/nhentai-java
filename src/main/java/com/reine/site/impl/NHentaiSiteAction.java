@@ -9,19 +9,14 @@ import com.reine.entity.HentaiStore;
 import com.reine.properties.Profile;
 import com.reine.site.SiteAction;
 import com.reine.utils.BrowserManager;
+import com.reine.utils.Compress;
 import com.reine.utils.HttpClientRequests;
 import com.reine.utils.PlaywrightRequests;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.model.enums.AesKeyStrength;
-import net.lingala.zip4j.model.enums.EncryptionMethod;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -53,20 +48,7 @@ public class NHentaiSiteAction implements SiteAction {
     @Getter
     private List<FailResult> failList = new ArrayList<>();
 
-    private static void getAllFiles(File fileInput, List<File> allFileList) {
-        // 获取文件列表
-        File[] fileList = fileInput.listFiles();
-        assert fileList != null;
-        for (File file : fileList) {
-            if (file.isDirectory()) {
-                // 递归处理文件夹
-                getAllFiles(file, allFileList);
-            } else {
-                // 如果是文件则将其加入到文件数组中
-                allFileList.add(file);
-            }
-        }
-    }
+private final Compress compress;
 
     @Override
     public String baseUrl() {
@@ -106,27 +88,8 @@ public class NHentaiSiteAction implements SiteAction {
     }
 
     @Override
-    public boolean packageTo7z(String zipName, URI folder, String passWord, EncryptionMethod encryptionMethod, AesKeyStrength aesKeyStrength) {
-        log.info("开始压缩");
-        log.debug("source文件夹: {},password:{},加密方法：{},AesKeyStrength:{}", folder, passWord, encryptionMethod.name(), aesKeyStrength.name());
-
-        var zip = new ZipParameters();
-        zip.setEncryptFiles(true);
-        zip.setEncryptionMethod(encryptionMethod);
-        if (encryptionMethod == EncryptionMethod.AES) {
-            zip.setAesKeyStrength(aesKeyStrength);
-        }
-        zip.setDefaultFolderPath(profile.getRootDir());
-        try (var zipFile = new ZipFile(profile.getRootDir()+zipName + ".zip", passWord.toCharArray())) {
-            List<File> allFileList = new ArrayList<>();
-            getAllFiles(new File(folder), allFileList);
-            zipFile.addFiles(allFileList, zip);
-            log.info("压缩完成,path:{},size:{}",zipFile.getFile().getAbsolutePath(),zipFile.getFile().length()/1024+"MB");
-        } catch (Exception IOException) {
-            log.error("压缩失败", IOException);
-        }
-        // throw new UnsupportedOperationException();
-        return true;
+    public boolean packageTo7z() {
+        return compress.packageToZip(hentaiName);
     }
 
     /**

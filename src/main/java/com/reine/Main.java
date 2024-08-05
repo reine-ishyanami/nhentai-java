@@ -8,8 +8,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 2024/8/3 23:39
  */
 @SpringBootApplication
+
 public class Main {
     public static void main(String[] args) {
+
         SpringApplication.run(Main.class, args);
+
     }
 }

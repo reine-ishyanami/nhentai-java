@@ -4,16 +4,11 @@ import com.reine.properties.Profile;
 import com.reine.site.SiteAction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.lingala.zip4j.model.enums.AesKeyStrength;
-import net.lingala.zip4j.model.enums.EncryptionMethod;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 
 /**
@@ -40,20 +35,14 @@ public class Downloader {
         action.download().forEach(fail -> log.error("{} 下载失败, 原因 {}", fail.fileName(), fail.reason()));
         if (profile.getCompress()) {
             try {
-                action.packageTo7z(name, getFolder(name), profile.getPassword(), EncryptionMethod.AES, AesKeyStrength.KEY_STRENGTH_256);
+                action.packageTo7z();
             } catch (IOException e) {
                 log.error("打包失败:{}", e.getMessage());
             }
         }
     }
 
-    private URI getFolder(String name) {
-        Path paths =
-                Paths.get(System.getProperty("user.dir"),profile.getRootDir(),name);
 
-        return paths.toUri();
-
-    }
 
     /**
      * 设置下载路径
