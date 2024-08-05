@@ -28,7 +28,7 @@ import java.util.List;
 public class Compress {
     private final Profile profile;
 
-    private static void getAllFiles(File fileInput, List<File> allFileList) {
+    private void getAllFiles(File fileInput, List<File> allFileList) {
         // 获取文件列表
         Path startPath = Paths.get(fileInput.getPath());
         try {
@@ -46,7 +46,7 @@ public class Compress {
 
     public boolean packageToZip(String zipName, Path sourceFolder, String passWord, EncryptionMethod encryptionMethod, AesKeyStrength aesKeyStrength, int splitSize) throws IOException {
         log.info("开始压缩");
-        log.info("源文件夹: {} , 密码:{} , 加密方法：{},AES 的强度:{}", sourceFolder.toFile().getAbsolutePath(), passWord, encryptionMethod.name(), aesKeyStrength.name());
+        log.info("源文件夹: {} , 密码: {} , 加密方法: {}, AES 的强度: {}", sourceFolder.toFile().getAbsolutePath(), passWord, encryptionMethod.name(), aesKeyStrength.name());
         var zip = new ZipParameters();
         zip.setEncryptFiles(encryptionMethod != EncryptionMethod.NONE);
         zip.setEncryptionMethod(encryptionMethod);
@@ -58,7 +58,7 @@ public class Compress {
         if (splitSize != 0)
             zipFile.createSplitZipFile(allFileList, zip, true, splitSize * 1048576L);
         else zipFile.addFiles(allFileList, zip);
-        log.info("压缩完成,路径:{},大小:{},分片数量:{}", zipFile.getFile().getAbsolutePath(), (zipFile.getFile().length() + (1024 * 1024) * zipFile.getSplitZipFiles().size() - 1) + "KB", zipFile.getSplitZipFiles().size());
+        log.info("压缩完成, 路径: {}, 大小: {}, 分片数量: {}", zipFile.getFile().getAbsolutePath(), (zipFile.getFile().length() + (1024 * 1024) * zipFile.getSplitZipFiles().size() - 1) + "KB", zipFile.getSplitZipFiles().size());
         zipFile.close();
         return true;
     }
@@ -67,7 +67,6 @@ public class Compress {
         var em = EncryptionMethod.NONE;
         AesKeyStrength aesKeyStrength = AesKeyStrength.KEY_STRENGTH_128;
         if (!profile.getPassword().isEmpty()) {
-
             em = switch (profile.getEncryptionMethod()) {
                 case 1 -> EncryptionMethod.ZIP_STANDARD;
                 case 2 -> EncryptionMethod.ZIP_STANDARD_VARIANT_STRONG;
@@ -83,8 +82,7 @@ public class Compress {
                 default -> throw new IllegalStateException("Unexpected value: " + profile.getEncryptionMethod());
             };
         }
-                Files.createDirectories(Paths.get("", profile.getCompressDir()));
-
+        Files.createDirectories(Paths.get("", profile.getCompressDir()));
         return packageToZip(Paths.get(profile.getCompressDir(), name + ".zip").toString(), Paths.get(name, profile.getRootDir()), profile.getPassword(), em, aesKeyStrength, profile.getCompressSplitSize());
     }
 }

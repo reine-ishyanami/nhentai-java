@@ -51,11 +51,10 @@ public class Profile {
      * 4:AES_192
      * 5:AES_256
      */
-    private byte encryptionMethod = 3;
-    /***
-     *  压缩文件分片大小，单位MB，0表示不分片
-     *
+    private Byte encryptionMethod = 3;
+    /**
+     * 压缩文件分片大小，单位MB，0表示不分片
      */
-    private int compressSplitSize = 0;
+    private Integer compressSplitSize = 0;
 
 }
