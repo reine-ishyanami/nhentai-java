@@ -57,6 +57,36 @@ public class Profile {
      */
     private Integer compressSplitSize = 0;
     /**
+     * 压缩等级
+     * <p>
+     * Level 0 无压缩
+     * </p>
+     * </p>
+     * Level 1 最快的压缩速度。
+     * </p>
+     * <p>
+     * Level 2
+     * </p>
+     * <p>
+     * Level 3
+     * <p>
+     * Level 5 速度和压缩率别之间的折衷。
+     * </p>
+     * <p>
+     * Level 6
+     * </p>
+     * <p>
+     * Level 7
+     * </p>
+     * <p>
+     * Level 8
+     * </p>
+     * <p>
+     * Level 9 最高的压缩率。
+     * </p>
+     */
+    private Integer compressionLevel = 5;
+    /**
      * 存放 pdf 的路径
      */
     private String pdfDir = "pdf";
@@ -64,5 +94,6 @@ public class Profile {
      * 是否转换成 PDF
      */
     private Boolean convertPdf = false;
+
 
 }

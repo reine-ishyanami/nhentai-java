@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.AesKeyStrength;
+import net.lingala.zip4j.model.enums.CompressionLevel;
 import net.lingala.zip4j.model.enums.EncryptionMethod;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,10 @@ import java.util.List;
 public class Compress {
     private final Profile profile;
 
+    /**
+     * @param fileInput   源文件夹
+     * @param allFileList 所有文件列表
+     */
     private void getAllFiles(File fileInput, List<File> allFileList) {
         // 获取文件列表
         Path startPath = Paths.get(fileInput.getPath());
@@ -44,25 +49,61 @@ public class Compress {
         }
     }
 
-    public boolean packageToZip(String zipName, Path sourceFolder, String passWord, EncryptionMethod encryptionMethod, AesKeyStrength aesKeyStrength, int splitSize) throws IOException {
+    /**
+     * 对一个目录进行压缩
+     *
+     * @param zipName          压缩包名称
+     * @param sourceFolder     源目录
+     * @param passWord         压缩包密码
+     * @param encryptionMethod 加密方式
+     * @param aesKeyStrength   aes 密钥强度
+     * @param splitSize        分片大小
+     * @param compLevel        压缩等级
+     * @return 任务是否成功
+     * @throws IOException io 异常，由调用者处理
+     */
+    public boolean packageToZip(String zipName, Path sourceFolder, String passWord, EncryptionMethod encryptionMethod, AesKeyStrength aesKeyStrength, int splitSize, CompressionLevel compLevel) throws IOException {
         log.info("开始压缩");
-        log.info("源文件夹: {} , 密码: {} , 加密方法: {}, AES 的强度: {}", sourceFolder.toFile().getAbsolutePath(), passWord, encryptionMethod.name(), aesKeyStrength.name());
-        var zip = new ZipParameters();
-        zip.setEncryptFiles(encryptionMethod != EncryptionMethod.NONE);
-        zip.setEncryptionMethod(encryptionMethod);
-        zip.setAesKeyStrength(aesKeyStrength);
-        zip.setDefaultFolderPath(profile.getRootDir());
-        var zipFile = new ZipFile(zipName, passWord.toCharArray());
+        log.info("源文件夹: {} , 密码: {} , 加密方法: {},AES 的强度: {}", sourceFolder.toFile().getAbsolutePath(), passWord, encryptionMethod.name(), aesKeyStrength.name());
+        var zipParameters = new ZipParameters();
+        zipParameters.setEncryptFiles(encryptionMethod != EncryptionMethod.NONE);
+        zipParameters.setEncryptionMethod(encryptionMethod);
+        zipParameters.setAesKeyStrength(aesKeyStrength);
+        zipParameters.setDefaultFolderPath(profile.getRootDir());
+        zipParameters.setCompressionLevel(compLevel);
+        var passWordChar = zh2AsciiArray(passWord);
+        var zipFile = new ZipFile(zipName, passWordChar);
         List<File> allFileList = new ArrayList<>();
         getAllFiles(sourceFolder.toFile(), allFileList);
         if (splitSize != 0)
-            zipFile.createSplitZipFile(allFileList, zip, true, splitSize * 1048576L);
-        else zipFile.addFiles(allFileList, zip);
-        log.info("压缩完成, 路径: {}, 大小: {}, 分片数量: {}", zipFile.getFile().getAbsolutePath(), (zipFile.getFile().length() + (1024 * 1024) * zipFile.getSplitZipFiles().size() - 1) + "KB", zipFile.getSplitZipFiles().size());
+            zipFile.createSplitZipFile(allFileList, zipParameters, true, splitSize * 1048576L);
+        else zipFile.addFiles(allFileList, zipParameters);
+        log.info("压缩完成,路径: {},大小: {},分片数量: {}", zipFile.getFile().getAbsolutePath(), (zipFile.getFile().length() + (1024 * 1024) * zipFile.getSplitZipFiles().size() - 1) + "KB", zipFile.getSplitZipFiles().size());
+        log.info("如果无法解压,请尝试使用 WinRAR (目前 7-zip 无法使用非 Ascii 字符密码解压，WinRAR正常)");
         zipFile.close();
         return true;
     }
 
+    /**
+     * 中文或其它非Ascii 字符到 Ascii char 数组
+     *
+     * @param zh 中文或其它非 Ascii 字符串
+     * @return ascii char[]
+     */
+    private char[] zh2AsciiArray(String zh) {
+        char[] ascii = new char[zh.length()];
+        for (int i = 0; i < zh.length(); i++) {
+            ascii[i] = zh.charAt(i);
+        }
+        return ascii;
+    }
+
+
+    /**
+     * 对当前下载结果进行压缩
+     *
+     * @param name 压缩包名称
+     */
     public boolean packageToZip(String name) throws IOException {
         var em = EncryptionMethod.NONE;
         AesKeyStrength aesKeyStrength = AesKeyStrength.KEY_STRENGTH_128;
@@ -83,7 +124,29 @@ public class Compress {
             };
         }
         Files.createDirectories(Paths.get("", profile.getCompressDir()));
-        return packageToZip(Paths.get(profile.getCompressDir(), name + ".zip").toString(), Paths.get(name, profile.getRootDir()), profile.getPassword(), em, aesKeyStrength, profile.getCompressSplitSize());
+
+        return packageToZip(Paths.get(profile.getCompressDir(), name + ".zip").toString(), Paths.get(name, profile.getRootDir()), profile.getPassword(), em, aesKeyStrength, profile.getCompressSplitSize(), getCompLevel());
+    }
+
+    /**
+     * 从配置文件解析压缩等级
+     *
+     * @return 解析后的压缩等级
+     */
+    private CompressionLevel getCompLevel() {
+        return switch (profile.getCompressionLevel()) {
+            case 1 -> CompressionLevel.NO_COMPRESSION;
+            case 2 -> CompressionLevel.FASTEST;
+            case 3 -> CompressionLevel.FAST;
+            case 4 -> CompressionLevel.MEDIUM_FAST;
+            // case 5 -> CompressionLevel.NORMAL;
+            case 6 -> CompressionLevel.HIGHER;
+            case 7 -> CompressionLevel.MAXIMUM;
+            case 8 -> CompressionLevel.PRE_ULTRA;
+            case 9 -> CompressionLevel.ULTRA;
+            default -> CompressionLevel.NORMAL;
+
+        };
     }
 }
 
