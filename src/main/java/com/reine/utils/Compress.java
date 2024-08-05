@@ -62,9 +62,16 @@ public class Compress {
      * @return 任务是否成功
      * @throws IOException io 异常，由调用者处理
      */
-    public boolean packageToZip(String zipName, Path sourceFolder, String passWord, EncryptionMethod encryptionMethod, AesKeyStrength aesKeyStrength, int splitSize, CompressionLevel compLevel) throws IOException {
+    public boolean packageToZip(String zipName,
+                                Path sourceFolder,
+                                String passWord,
+                                EncryptionMethod encryptionMethod,
+                                AesKeyStrength aesKeyStrength,
+                                int splitSize,
+                                CompressionLevel compLevel) throws IOException {
         log.info("开始压缩");
-        log.info("源文件夹: {} , 密码: {} , 加密方法: {},AES 的强度: {}", sourceFolder.toFile().getAbsolutePath(), passWord, encryptionMethod.name(), aesKeyStrength.name());
+        log.info("源文件夹: {}, 密码: {}, 加密方法: {}, AES 的强度: {}",
+                sourceFolder.toFile().getAbsolutePath(), passWord, encryptionMethod.name(), aesKeyStrength.name());
         var zipParameters = new ZipParameters();
         zipParameters.setEncryptFiles(encryptionMethod != EncryptionMethod.NONE);
         zipParameters.setEncryptionMethod(encryptionMethod);
@@ -75,17 +82,19 @@ public class Compress {
         var zipFile = new ZipFile(zipName, passWordChar);
         List<File> allFileList = new ArrayList<>();
         getAllFiles(sourceFolder.toFile(), allFileList);
-        if (splitSize != 0)
-            zipFile.createSplitZipFile(allFileList, zipParameters, true, splitSize * 1048576L);
+        if (splitSize != 0) zipFile.createSplitZipFile(allFileList, zipParameters, true, splitSize * 1048576L);
         else zipFile.addFiles(allFileList, zipParameters);
-        log.info("压缩完成,路径: {},大小: {},分片数量: {}", zipFile.getFile().getAbsolutePath(), (zipFile.getFile().length() + (1024 * 1024) * zipFile.getSplitZipFiles().size() - 1) + "KB", zipFile.getSplitZipFiles().size());
-        log.info("如果无法解压,请尝试使用 WinRAR (目前 7-zip 无法使用非 Ascii 字符密码解压，WinRAR正常)");
+        log.info("压缩完成，路径: {}, 大小: {}KB, 分片数量: {}",
+                zipFile.getFile().getAbsolutePath(),
+                (zipFile.getFile().length() + (1024 * 1024) * zipFile.getSplitZipFiles().size() - 1),
+                zipFile.getSplitZipFiles().size());
+        log.info("如果无法解压，请尝试使用 WinRAR (目前 7-zip 无法使用非 Ascii 字符密码解压，WinRAR 正常)");
         zipFile.close();
         return true;
     }
 
     /**
-     * 中文或其它非Ascii 字符到 Ascii char 数组
+     * 中文或其它非 Ascii 字符到 Ascii char 数组
      *
      * @param zh 中文或其它非 Ascii 字符串
      * @return ascii char[]
@@ -125,7 +134,10 @@ public class Compress {
         }
         Files.createDirectories(Paths.get("", profile.getCompressDir()));
 
-        return packageToZip(Paths.get(profile.getCompressDir(), name + ".zip").toString(), Paths.get(name, profile.getRootDir()), profile.getPassword(), em, aesKeyStrength, profile.getCompressSplitSize(), getCompLevel());
+        return packageToZip(Paths.get(profile.getCompressDir(), name + ".zip").toString(),
+                Paths.get(name, profile.getRootDir()),
+                profile.getPassword(), em, aesKeyStrength,
+                profile.getCompressSplitSize(), getCompLevel());
     }
 
     /**
@@ -145,7 +157,6 @@ public class Compress {
             case 8 -> CompressionLevel.PRE_ULTRA;
             case 9 -> CompressionLevel.ULTRA;
             default -> CompressionLevel.NORMAL;
-
         };
     }
 }
