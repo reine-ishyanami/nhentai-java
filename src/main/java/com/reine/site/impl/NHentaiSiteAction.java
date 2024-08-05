@@ -45,12 +45,15 @@ public class NHentaiSiteAction implements SiteAction {
     private final PlaywrightRequests playwright;
 
     private final BrowserManager browserManager;
+
     private HentaiDetail hentaiDetail;
+
     private String hentaiName;
+
     @Getter
     private List<FailResult> failList = new ArrayList<>();
 
-private final Compress compress;
+    private final Compress compress;
 
     @Override
     public String baseUrl() {
