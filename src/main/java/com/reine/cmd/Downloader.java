@@ -34,11 +34,30 @@ public class Downloader {
      * @param name hentai名称
      */
     @ShellMethod(key = "download", value = "download hentai")
-    public void download(@ShellOption(help = "hentai name") String name,
-                         @ShellOption(help = "compress", defaultValue = "false") Boolean compress,
+    public void actionDownload(@ShellOption(help = "hentai name") String name,
+                               @ShellOption(help = "compress", defaultValue = "false") Boolean compress,
+                               @ShellOption(help = "convert to pdf", defaultValue = "false") Boolean convert,
+                               @ShellOption(help = "overwrite pdf if exists", defaultValue = "false") Boolean overwrite) {
+        action.search(name);
+        actionDownload(compress, convert, overwrite);
+    }
+
+    /**
+     *  下载 hentai 随机的
+     * @param compress 是否压缩
+     * @param convert 是否转化成 pdf
+     * @param overwrite 是否覆盖已下载的文件
+     */
+    @ShellMethod(key = "random", value = "download hentai randomly")
+    public void random(
+            @ShellOption(help = "compress", defaultValue = "false") Boolean compress,
                          @ShellOption(help = "convert to pdf", defaultValue = "false") Boolean convert,
                          @ShellOption(help = "overwrite pdf if exists", defaultValue = "false") Boolean overwrite) {
-        action.search(name);
+        action.random();
+        actionDownload(compress, convert, overwrite);
+    }
+
+    private void actionDownload(@ShellOption(help = "compress", defaultValue = "false") Boolean compress, @ShellOption(help = "convert to pdf", defaultValue = "false") Boolean convert, @ShellOption(help = "overwrite pdf if exists", defaultValue = "false") Boolean overwrite) {
         action.download()
                 .forEach(fail -> log.atLevel(fail.logLevel()).log("{} 文件下载失败，原因: {}", fail.fileName(), fail.reason()));
         if (profile.getCompress() || compress) {

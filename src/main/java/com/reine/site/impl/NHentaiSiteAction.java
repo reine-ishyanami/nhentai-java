@@ -71,7 +71,16 @@ public class NHentaiSiteAction implements SiteAction {
         hentaiDetail = getHentaiDetail(new String(rsp2, StandardCharsets.UTF_8));
         return hentaiDetail;
     }
-
+    @Timer
+    @Override
+    public HentaiDetail random() {
+        final var url = "https://nhentai.net/random/";
+        var rsp1 = playwright.antiCloudflare(url);
+        hentaiDetail = getHentaiDetail(new String(rsp1, StandardCharsets.UTF_8));
+        hentaiName=hentaiDetail.gallery();
+        log.info("随机获取 {}", hentaiName);
+        return hentaiDetail;
+    }
     private Path hentaiPath;
 
     @Timer

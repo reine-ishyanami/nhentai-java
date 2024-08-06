@@ -28,6 +28,12 @@ public interface SiteAction {
     HentaiDetail search(String name);
 
     /**
+     * 随机获取一个本子的详细信息
+     * @return 本子的详细信息
+     */
+    HentaiDetail random();
+
+    /**
      * 开启下载任务
      *
      * @return 下载失败文件及其失败原因
