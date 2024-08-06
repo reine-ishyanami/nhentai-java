@@ -186,11 +186,14 @@ public class Compress {
                 "#".repeat(progress) +
                 " ".repeat(progressBarLength - progress) +
                 "] " + currentProgress + "%" + "\r";
-       if (profile.getCompressProgressBarVisible()) {
-           if (profile.getCompressProgressBarImpl() == 2)
-               System.out.print(progressBar);
-           else log.info(progressBar);
-       }
+        if (profile.getCompressProgressBarVisible()) {
+            if (profile.getCompressProgressBarImpl() == 1) {
+                if (currentProgress % 10 == 0) {
+                    log.info(progressBar);
+                }
+            } else
+                System.out.print(progressBar);
+        }
     }
 
 }

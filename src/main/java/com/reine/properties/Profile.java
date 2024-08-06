@@ -99,7 +99,7 @@ public class Profile {
     /**
      * 是否启用压缩任务进度条
      */
-    private Boolean compressProgressBarVisible = true;
+    private Boolean compressProgressBarVisible = false;
     /**
      * <p> 压缩任务进度条实现，由于 System.out.print(); 有性能问题，所以默认使用 log.info(); 实现。
      * </p>
