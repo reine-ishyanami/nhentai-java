@@ -26,25 +26,31 @@ public class Downloader {
 
     private final Profile profile;
 
+    private final PdfUtils pdfUtils;
+
     /**
      * 下载hentai
      *
      * @param name hentai名称
      */
     @ShellMethod(key = "download", value = "download hentai")
-    public void download(@ShellOption(help = "hentai name") String name) {
+    public void download(@ShellOption(help = "hentai name") String name,
+                         @ShellOption(help = "compress", defaultValue = "false") Boolean compress,
+                         @ShellOption(help = "convert to pdf", defaultValue = "false") Boolean convert,
+                         @ShellOption(help = "overwrite pdf if exists", defaultValue = "false") Boolean overwrite) {
         action.search(name);
-        action.download().forEach(fail -> log.error("{} 下载失败, 原因 {}", fail.fileName(), fail.reason()));
-        if (profile.getCompress()) {
+        action.download()
+                .forEach(fail -> log.atLevel(fail.logLevel()).log("{} 文件下载失败，原因: {}", fail.fileName(), fail.reason()));
+        if (profile.getCompress() || compress) {
             try {
                 action.compress();
             } catch (IOException e) {
                 log.error("打包失败");
             }
         }
-        if (profile.getConvertPdf()) {
+        if (profile.getConvertPdf() || convert) {
             try {
-                action.convertToPdf();
+                action.convertToPdf(overwrite);
             } catch (IOException e) {
                 log.error("转换失败");
             }
@@ -59,15 +65,15 @@ public class Downloader {
      */
     @ShellMethod(key = "convert", value = "convert hentai to pdf")
     public void convert(@ShellOption(help = "hentai images path") String path,
-                        @ShellOption(help = "pdf name") String name) {
-        log.info(path);
+                        @ShellOption(help = "pdf name") String name,
+                        @ShellOption(help = "overwrite pdf if exists", defaultValue = "false") Boolean overwrite) {
+        log.info("images path: {}", path);
         try {
-            PdfUtils.convertToPdf(Path.of(path), Path.of(profile.getPdfDir(), name + ".pdf"));
+            pdfUtils.convertToPdf(Path.of(path), Path.of(profile.getPdfDir(), name + ".pdf"), overwrite);
         } catch (IOException e) {
             log.error("转换失败");
         }
     }
-
 
     /**
      * 设置下载路径
@@ -90,6 +96,7 @@ public class Downloader {
     @ShellMethod(key = "password", value = "package password")
     public String setPassword(@ShellOption(help = "password") String password) {
         profile.setPassword(password);
+        profile.setCompress(true);
         return "Update Password Success";
     }
 }

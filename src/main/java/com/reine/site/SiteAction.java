@@ -43,8 +43,9 @@ public interface SiteAction {
 
     /**
      * 将文件夹中的所有图片合并成单个 pdf 文件
+     * @param overwrite 是否覆盖
      * @return 成功与否
      */
-    boolean convertToPdf() throws IOException;
+    boolean convertToPdf(Boolean overwrite) throws IOException;
 
 }

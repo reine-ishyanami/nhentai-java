@@ -23,8 +23,8 @@ public class PlaywrightRequests {
     /**
      * 试图绕过cf5s盾
      *
-     * @param url
-     * @return
+     * @param url 请求的url
+     * @return 收到的正确响应内容
      */
     public byte[] antiCloudflare(String url) throws RequestException {
         var browser = browserManager.getBrowser();
@@ -43,7 +43,7 @@ public class PlaywrightRequests {
                     log.warn("疑似触发了 Cloudflare 的验证码");
                     break;
                 }
-                log.info("请求成功");
+                log.debug("请求成功");
                 return response.body();
             }
         }

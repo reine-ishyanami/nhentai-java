@@ -70,7 +70,7 @@ public class Compress {
                                 int splitSize,
                                 CompressionLevel compLevel) throws IOException {
         log.info("开始压缩");
-        log.info("源文件夹: {}, 密码: {}, 加密方法: {}, AES 的强度: {}",
+        log.debug("源文件夹: {}, 密码: {}, 加密方法: {}, AES 的强度: {}",
                 sourceFolder.toFile().getAbsolutePath(), passWord, encryptionMethod.name(), aesKeyStrength.name());
         var zipParameters = new ZipParameters();
         zipParameters.setEncryptFiles(encryptionMethod != EncryptionMethod.NONE);
@@ -84,10 +84,11 @@ public class Compress {
         getAllFiles(sourceFolder.toFile(), allFileList);
         if (splitSize != 0) zipFile.createSplitZipFile(allFileList, zipParameters, true, splitSize * 1048576L);
         else zipFile.addFiles(allFileList, zipParameters);
-        log.info("压缩完成，路径: {}, 大小: {}KB, 分片数量: {}",
+        log.debug("压缩完成，路径: {}, 大小: {}KB, 分片数量: {}",
                 zipFile.getFile().getAbsolutePath(),
                 (zipFile.getFile().length() + (1024 * 1024) * zipFile.getSplitZipFiles().size() - 1),
                 zipFile.getSplitZipFiles().size());
+        log.info("压缩完成");
         log.warn("如果无法解压，请尝试使用 WinRAR (目前 7-zip 无法使用非 Ascii 字符密码解压，WinRAR 正常)");
         zipFile.close();
         return true;

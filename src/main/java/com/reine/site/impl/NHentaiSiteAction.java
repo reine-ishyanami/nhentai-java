@@ -41,6 +41,7 @@ public class NHentaiSiteAction implements SiteAction {
     private final PlaywrightRequests playwright;
 
     private final BrowserManager browserManager;
+    private final PdfUtils pdfUtils;
 
     private HentaiDetail hentaiDetail;
 
@@ -78,8 +79,9 @@ public class NHentaiSiteAction implements SiteAction {
     public List<FailResult> download() {
         hentaiPath = Path.of(profile.getRootDir(), hentaiName);
         if (!hentaiPath.toFile().mkdirs()) {
-            log.error("目录 {} 已存在。", hentaiName);
+            log.warn("目录 {} 已存在。", hentaiName);
         }
+        log.info("开始下载");
         List<CompletableFuture<Void>> futures = hentaiDetail.imgList()
                 .stream()
                 .map(img -> new HentaiStore("%s/%s/%s".formatted(baseUrl(), hentaiDetail.gallery(), img),
@@ -97,8 +99,8 @@ public class NHentaiSiteAction implements SiteAction {
     }
 
     @Override
-    public boolean convertToPdf() throws IOException {
-        return PdfUtils.convertToPdf(hentaiPath, Path.of(profile.getPdfDir(), hentaiName+".pdf"));
+    public boolean convertToPdf(Boolean overwrite) throws IOException {
+        return pdfUtils.convertToPdf(hentaiPath, Path.of(profile.getPdfDir(), hentaiName+".pdf"), overwrite);
     }
 
     /**

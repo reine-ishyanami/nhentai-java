@@ -1,5 +1,8 @@
 package com.reine.entity;
 
+import org.slf4j.Logger;
+import org.slf4j.event.Level;
+
 /**
  * 下载失败文件名称及其下载失败原因
  *
@@ -8,5 +11,5 @@ package com.reine.entity;
  * @author reine
  * 2024/7/18 15:54
  */
-public record FailResult(String fileName, String reason) {
+public record FailResult(String fileName, String reason, Level logLevel) {
 }

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -89,7 +90,7 @@ public class HttpClientRequests {
      * @return
      */
     public CompletableFuture<Void> downloadImage(HentaiStore hentaiStore, int retryCount) {
-        log.info("开始下载文件: {}", hentaiStore.url());
+        log.debug("开始下载文件: {}", hentaiStore.url());
         var url = hentaiStore.url();
         var path = hentaiStore.path();
         HttpRequest request = HttpRequest.newBuilder()
@@ -102,14 +103,14 @@ public class HttpClientRequests {
                     int code = rsp.statusCode();
                     // 递归重试
                     if (code != 200 && retryCount < profile.getRetryTime()) {
-                        log.info("重试 {} 次, {}", retryCount + 1, url);
+                        log.debug("重试 {} 次, {}", retryCount + 1, url);
                         downloadImage(hentaiStore, retryCount + 1);
                         return;
                     }
                     File file = path.toFile();
                     // 重试次数超过5次
                     if (code != 200 && retryCount == profile.getRetryTime()) {
-                        failList.add(new FailResult(file.getName(), "重试次数过多"));
+                        failList.add(new FailResult(file.getName(), "重试次数过多", Level.ERROR));
                         return;
                     }
                     try {
@@ -119,10 +120,10 @@ public class HttpClientRequests {
                             if (file.delete() && file.createNewFile()) {
                                 writeBytesToFile(file, rsp.body());
                             } else {
-                                failList.add(new FailResult(file.getName(), "文件创建失败"));
+                                failList.add(new FailResult(file.getName(), "文件创建失败", Level.ERROR));
                             }
                         } else {
-                            failList.add(new FailResult(file.getName(), "文件已存在"));
+                            failList.add(new FailResult(file.getName(), "文件已存在", Level.WARN));
                         }
                     } catch (IOException e) {
                         throw new RuntimeException(e);
