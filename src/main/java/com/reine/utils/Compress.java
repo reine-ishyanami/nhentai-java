@@ -7,7 +7,9 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.AesKeyStrength;
 import net.lingala.zip4j.model.enums.CompressionLevel;
+import net.lingala.zip4j.model.enums.CompressionMethod;
 import net.lingala.zip4j.model.enums.EncryptionMethod;
+import net.lingala.zip4j.progress.ProgressMonitor;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -78,12 +80,23 @@ public class Compress {
         zipParameters.setAesKeyStrength(aesKeyStrength);
         zipParameters.setDefaultFolderPath(profile.getRootDir());
         zipParameters.setCompressionLevel(compLevel);
+        zipParameters.setCompressionMethod(CompressionMethod.DEFLATE);
         var passWordChar = zh2AsciiArray(passWord);
         var zipFile = new ZipFile(zipName, passWordChar);
+        zipFile.setRunInThread(true);
         List<File> allFileList = new ArrayList<>();
         getAllFiles(sourceFolder.toFile(), allFileList);
         if (splitSize != 0) zipFile.createSplitZipFile(allFileList, zipParameters, true, splitSize * 1048576L);
         else zipFile.addFiles(allFileList, zipParameters);
+        var progressMonitor = zipFile.getProgressMonitor();
+        while (progressMonitor.getState() == ProgressMonitor.State.BUSY) {
+            printProgressBar(progressMonitor.getPercentDone());
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         log.debug("压缩完成，路径: {}, 大小: {}KB, 分片数量: {}",
                 zipFile.getFile().getAbsolutePath(),
                 (zipFile.getFile().length() + (1024 * 1024) * zipFile.getSplitZipFiles().size() - 1),
@@ -160,5 +173,21 @@ public class Compress {
             default -> CompressionLevel.NORMAL;
         };
     }
+
+    /**
+     * 打印进度条
+     *
+     * @param currentProgress 当前进度
+     */
+    private void printProgressBar(int currentProgress) {
+        var progressBarLength = 50; // 进度条长度
+        var progress = (int) ((currentProgress / (double) 100) * progressBarLength);
+        var progressBar = "\r压缩进度：[" +
+                "#".repeat(progress) +
+                " ".repeat(progressBarLength - progress) +
+                "] " + currentProgress + "%" + "\r";
+        System.out.print(progressBar);
+    }
+
 }
 
