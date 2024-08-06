@@ -21,6 +21,12 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
+configurations {
+    configureEach {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+}
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation 'org.springframework.shell:spring-shell-starter'
@@ -30,7 +36,6 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     implementation('net.lingala.zip4j:zip4j:2.11.5')
     implementation('org.apache.pdfbox:pdfbox:3.0.2')
-
 }
 
 dependencyManagement {
