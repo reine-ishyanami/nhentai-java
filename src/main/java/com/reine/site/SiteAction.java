@@ -1,8 +1,8 @@
 package com.reine.site;
 
+import com.reine.annotation.Timer;
 import com.reine.entity.FailResult;
 import com.reine.entity.HentaiDetail;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -34,7 +34,10 @@ public interface SiteAction {
      */
     List<FailResult> download();
 
-    /**
+  @Timer
+  HentaiDetail random();
+
+  /**
      * 将文件夹打包成7z
      *
      * @return 成功与否

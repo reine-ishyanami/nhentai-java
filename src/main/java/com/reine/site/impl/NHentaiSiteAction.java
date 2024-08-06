@@ -8,12 +8,11 @@ import com.reine.entity.HentaiHref;
 import com.reine.entity.HentaiStore;
 import com.reine.properties.Profile;
 import com.reine.site.SiteAction;
-import com.reine.utils.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
+import com.reine.utils.BrowserManager;
+import com.reine.utils.Compress;
+import com.reine.utils.HttpClientRequests;
+import com.reine.utils.PdfUtils;
+import com.reine.utils.PlaywrightRequests;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -21,6 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -92,6 +95,22 @@ public class NHentaiSiteAction implements SiteAction {
         log.info("下载完成");
         failList = requests.getFailList();
         return failList;
+    }
+
+    /**
+     * 随机获取 hentai 详情
+     *
+     * @return hentai 详情
+     */
+    @Timer
+    @Override
+    public HentaiDetail random() {
+        final var url = "https://nhentai.net/random/";
+        var rsp1 = playwright.antiCloudflare(url);
+        hentaiDetail = getHentaiDetail(new String(rsp1, StandardCharsets.UTF_8));
+        hentaiName = hentaiDetail.gallery();
+        log.info("随机获取到： {}", hentaiName);
+        return hentaiDetail;
     }
 
     @Override
