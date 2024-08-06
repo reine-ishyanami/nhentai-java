@@ -61,7 +61,7 @@ public class Profile {
     /**
      * 压缩等级
      * <p>
-     * Level 0 无压缩,只打包
+     * Level 0 无压缩，只打包
      * </p>
      * </p>
      * Level 1 最快的压缩速度。
@@ -95,7 +95,7 @@ public class Profile {
     /**
      * 是否转换成 PDF
      */
-    private Boolean convertPdf = true;
+    private Boolean convertPdf = false;
 
 
 }
