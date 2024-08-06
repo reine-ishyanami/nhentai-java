@@ -13,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "download.config")
 public class Profile {
     /**
-     * 文件后缀
+     * 文件后缀 TODO
      */
     private String suffix = "jpg";
     /**
@@ -31,7 +31,7 @@ public class Profile {
     /**
      * 压缩文件目录
      */
-    private String compressDir = "7z";
+    private String compressDir = "cpr";
     /**
      * 下载过程中，如果文件已存在，是否替换原有的文件
      */
@@ -45,11 +45,13 @@ public class Profile {
      */
     private String rootDir = ".";
     /**
-     * 1:ZIP_STANDARD
-     * 2:ZIP_STANDARD_VARIANT_STRONG
-     * 3:AES_128
-     * 4:AES_192
-     * 5:AES_256
+     * 加密方法
+     * <p>
+     * 1:ZIP_STANDARD</p><p>
+     * 2:ZIP_STANDARD_VARIANT_STRONG</p><p>
+     * 3:AES_128</p><p>
+     * 4:AES_192</p><p>
+     * 5:AES_256</p>
      */
     private Byte encryptionMethod = 3;
     /**

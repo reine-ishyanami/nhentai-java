@@ -35,7 +35,7 @@ public class Compress {
      */
     private void getAllFiles(File fileInput, List<File> allFileList) {
         // 获取文件列表
-        Path startPath = Paths.get(fileInput.getPath());
+        var startPath = Paths.get(fileInput.getPath());
         try {
             Files.walkFileTree(startPath, new SimpleFileVisitor<>() {
                 @Override
@@ -88,7 +88,7 @@ public class Compress {
                 zipFile.getFile().getAbsolutePath(),
                 (zipFile.getFile().length() + (1024 * 1024) * zipFile.getSplitZipFiles().size() - 1),
                 zipFile.getSplitZipFiles().size());
-        log.info("如果无法解压，请尝试使用 WinRAR (目前 7-zip 无法使用非 Ascii 字符密码解压，WinRAR 正常)");
+        log.warn("如果无法解压，请尝试使用 WinRAR (目前 7-zip 无法使用非 Ascii 字符密码解压，WinRAR 正常)");
         zipFile.close();
         return true;
     }
@@ -100,7 +100,7 @@ public class Compress {
      * @return ascii char[]
      */
     private char[] zh2AsciiArray(String zh) {
-        char[] ascii = new char[zh.length()];
+        var ascii = new char[zh.length()];
         for (int i = 0; i < zh.length(); i++) {
             ascii[i] = zh.charAt(i);
         }
@@ -115,7 +115,7 @@ public class Compress {
      */
     public boolean packageToZip(String name) throws IOException {
         var em = EncryptionMethod.NONE;
-        AesKeyStrength aesKeyStrength = AesKeyStrength.KEY_STRENGTH_128;
+        var aesKeyStrength = AesKeyStrength.KEY_STRENGTH_128;
         if (!profile.getPassword().isEmpty()) {
             em = switch (profile.getEncryptionMethod()) {
                 case 1 -> EncryptionMethod.ZIP_STANDARD;

@@ -22,7 +22,7 @@ public class TimerHandler {
         long start = System.currentTimeMillis();
         Object result = proceedingJoinPoint.proceed();
         long end = System.currentTimeMillis();
-        log.info("方法执行时间：{}ms", end - start);
+        log.info("方法执行时间: {}ms", end - start);
         return result;
     }
 

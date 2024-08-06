@@ -92,7 +92,7 @@ public class NHentaiSiteAction implements SiteAction {
     }
 
     @Override
-    public boolean packageTo7z() throws IOException {
+    public boolean compress() throws IOException {
         return compress.packageToZip(hentaiName);
     }
 

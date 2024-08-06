@@ -37,7 +37,7 @@ public class Downloader {
         action.download().forEach(fail -> log.error("{} 下载失败, 原因 {}", fail.fileName(), fail.reason()));
         if (profile.getCompress()) {
             try {
-                action.packageTo7z();
+                action.compress();
             } catch (IOException e) {
                 log.error("打包失败");
             }
