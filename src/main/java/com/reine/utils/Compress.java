@@ -8,6 +8,7 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.AesKeyStrength;
 import net.lingala.zip4j.model.enums.CompressionLevel;
 import net.lingala.zip4j.model.enums.EncryptionMethod;
+import net.lingala.zip4j.progress.ProgressMonitor;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -80,10 +81,22 @@ public class Compress {
         zipParameters.setCompressionLevel(compLevel);
         var passWordChar = zh2AsciiArray(passWord);
         var zipFile = new ZipFile(zipName, passWordChar);
+        zipFile.setRunInThread(true);
         List<File> allFileList = new ArrayList<>();
         getAllFiles(sourceFolder.toFile(), allFileList);
         if (splitSize != 0) zipFile.createSplitZipFile(allFileList, zipParameters, true, splitSize * 1048576L);
         else zipFile.addFiles(allFileList, zipParameters);
+        if (profile.getCompress().getProgressVisible()) {
+            var progressMonitor = zipFile.getProgressMonitor();
+            while (!progressMonitor.getState().equals(ProgressMonitor.State.READY)) {
+                printProgressBar(progressMonitor.getPercentDone());
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
         log.debug("压缩完成，路径: {}, 大小: {}KB, 分片数量: {}",
                 zipFile.getFile().getAbsolutePath(),
                 (zipFile.getFile().length() + (1024 * 1024) * zipFile.getSplitZipFiles().size() - 1),
@@ -107,7 +120,6 @@ public class Compress {
         }
         return ascii;
     }
-
 
     /**
      * 对当前下载结果进行压缩
@@ -133,12 +145,11 @@ public class Compress {
                 default -> throw new IllegalStateException("Unexpected value: " + profile.getCompress().getEncryptionMethod());
             };
         }
-        Files.createDirectories(Paths.get("", profile.getCompress().getCompressDir()));
-
-        return packageToZip(Paths.get(profile.getCompress().getCompressDir(), name + ".zip").toString(),
+        Files.createDirectories(Paths.get("", profile.getCompress().getDir()));
+        return packageToZip(Paths.get(profile.getCompress().getDir(), name + ".zip").toString(),
                 Paths.get(name, profile.getRootDir()),
                 profile.getCompress().getPassword(), em, aesKeyStrength,
-                profile.getCompress().getCompressSplitSize(), getCompLevel());
+                profile.getCompress().getSplitSize(), getCompLevel());
     }
 
     /**
@@ -147,7 +158,7 @@ public class Compress {
      * @return 解析后的压缩等级
      */
     private CompressionLevel getCompLevel() {
-        return switch (profile.getCompress().getCompressionLevel()) {
+        return switch (profile.getCompress().getLevel()) {
             case 1 -> CompressionLevel.NO_COMPRESSION;
             case 2 -> CompressionLevel.FASTEST;
             case 3 -> CompressionLevel.FAST;
@@ -159,6 +170,21 @@ public class Compress {
             case 9 -> CompressionLevel.ULTRA;
             default -> CompressionLevel.NORMAL;
         };
+    }
+
+    /**
+     * 打印进度条
+     *
+     * @param currentProgress 当前进度
+     */
+    private void printProgressBar(int currentProgress) {
+        var progressBarLength = 50; // 进度条长度
+        var progress = (int) ((currentProgress / (double) 100) * progressBarLength);
+        var progressBar = "\r压缩进度：[" +
+                "#".repeat(progress) +
+                " ".repeat(progressBarLength - progress) +
+                "] " + currentProgress + "%" + "\r";
+        System.out.print(progressBar);
     }
 }
 

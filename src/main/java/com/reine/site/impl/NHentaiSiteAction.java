@@ -101,7 +101,7 @@ public class NHentaiSiteAction implements SiteAction {
 
     @Override
     public boolean convertToPdf(Boolean overwrite) throws IOException {
-        return pdfUtils.convertToPdf(hentaiPath, Path.of(profile.getPdf().getPdfDir(), hentaiName+".pdf"), overwrite);
+        return pdfUtils.convertToPdf(hentaiPath, Path.of(profile.getPdf().getDir(), hentaiName+".pdf"), overwrite);
     }
 
     /**

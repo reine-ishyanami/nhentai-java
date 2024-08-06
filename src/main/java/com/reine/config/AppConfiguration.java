@@ -34,7 +34,7 @@ public class AppConfiguration {
     public void init() {
         try {
             // 创建 pdf 文件夹
-            Files.createDirectories(Paths.get(profile.getPdf().getPdfDir()));
+            Files.createDirectories(Paths.get(profile.getPdf().getDir()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -56,7 +56,7 @@ public class Profile {
         /**
          * 压缩文件目录
          */
-        private String compressDir = "cpr";
+        private String dir = "cpr";
         /**
          * 加密方法
          * <p>
@@ -70,7 +70,7 @@ public class Profile {
         /**
          * 压缩文件分片大小，单位MB，0表示不分片
          */
-        private Integer compressSplitSize = 0;
+        private Integer splitSize = 0;
         /**
          * 压缩等级
          * <p>
@@ -100,7 +100,11 @@ public class Profile {
          * Level 9 最高的压缩率。
          * </p>
          */
-        private Integer compressionLevel = 5;
+        private Integer level = 5;
+        /**
+         *  是否开启压缩进度条
+         */
+        private Boolean progressVisible = false;
     }
 
     @Data
@@ -108,7 +112,7 @@ public class Profile {
         /**
          * 存放 pdf 的路径
          */
-        private String pdfDir = "pdf";
+        private String dir = "pdf";
         /**
          * 是否转换成 PDF
          */

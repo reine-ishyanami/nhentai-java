@@ -69,7 +69,7 @@ public class Downloader {
                         @ShellOption(help = "overwrite pdf if exists", defaultValue = "false") Boolean overwrite) {
         log.info("images path: {}", path);
         try {
-            pdfUtils.convertToPdf(Path.of(path), Path.of(profile.getPdf().getPdfDir(), name + ".pdf"), overwrite);
+            pdfUtils.convertToPdf(Path.of(path), Path.of(profile.getPdf().getDir(), name + ".pdf"), overwrite);
         } catch (IOException e) {
             log.error("转换失败");
         }
