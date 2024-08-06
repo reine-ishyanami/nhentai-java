@@ -1,6 +1,8 @@
 package com.reine;
 
+import com.reine.properties.Profile;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
@@ -10,8 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class MainTests {
 
-    @Test
-    void test_playwright() {
+    @Autowired
+    private Profile profile;
 
+    @Test
+    void print_profile() {
+        System.out.println(profile);
     }
 }

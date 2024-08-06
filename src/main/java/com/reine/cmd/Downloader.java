@@ -41,14 +41,14 @@ public class Downloader {
         action.search(name);
         action.download()
                 .forEach(fail -> log.atLevel(fail.logLevel()).log("{} 文件下载失败，原因: {}", fail.fileName(), fail.reason()));
-        if (profile.getCompress() || compress) {
+        if (profile.getCompress().getEnable() || compress) {
             try {
                 action.compress();
             } catch (IOException e) {
                 log.error("打包失败");
             }
         }
-        if (profile.getConvertPdf() || convert) {
+        if (profile.getPdf().getEnable() || convert) {
             try {
                 action.convertToPdf(overwrite);
             } catch (IOException e) {
@@ -69,7 +69,7 @@ public class Downloader {
                         @ShellOption(help = "overwrite pdf if exists", defaultValue = "false") Boolean overwrite) {
         log.info("images path: {}", path);
         try {
-            pdfUtils.convertToPdf(Path.of(path), Path.of(profile.getPdfDir(), name + ".pdf"), overwrite);
+            pdfUtils.convertToPdf(Path.of(path), Path.of(profile.getPdf().getPdfDir(), name + ".pdf"), overwrite);
         } catch (IOException e) {
             log.error("转换失败");
         }
@@ -95,8 +95,8 @@ public class Downloader {
      */
     @ShellMethod(key = "password", value = "package password")
     public String setPassword(@ShellOption(help = "password") String password) {
-        profile.setPassword(password);
-        profile.setCompress(true);
+        profile.getCompress().setPassword(password);
+        profile.getCompress().setEnable(true);
         return "Update Password Success";
     }
 }

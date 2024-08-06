@@ -35,7 +35,6 @@ public class PdfUtils {
             log.warn("pdf 文件已存在，不进行操作");
             return false;
         }
-        if (!pdfPath.toFile().exists()) Files.createFile(pdfPath);
         log.info("开始将图片文件夹转换成 pdf 文件");
         // 创建一个新的PDDocument对象
         try (
@@ -56,8 +55,8 @@ public class PdfUtils {
                 contentStream.close();
             }
             document.save(pdfPath.toString());
+            log.info("转换完成");
         }
         return true;
     }
-
 }

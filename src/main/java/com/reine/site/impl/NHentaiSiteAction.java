@@ -41,6 +41,7 @@ public class NHentaiSiteAction implements SiteAction {
     private final PlaywrightRequests playwright;
 
     private final BrowserManager browserManager;
+
     private final PdfUtils pdfUtils;
 
     private HentaiDetail hentaiDetail;
@@ -100,7 +101,7 @@ public class NHentaiSiteAction implements SiteAction {
 
     @Override
     public boolean convertToPdf(Boolean overwrite) throws IOException {
-        return pdfUtils.convertToPdf(hentaiPath, Path.of(profile.getPdfDir(), hentaiName+".pdf"), overwrite);
+        return pdfUtils.convertToPdf(hentaiPath, Path.of(profile.getPdf().getPdfDir(), hentaiName+".pdf"), overwrite);
     }
 
     /**

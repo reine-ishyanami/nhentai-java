@@ -117,8 +117,8 @@ public class Compress {
     public boolean packageToZip(String name) throws IOException {
         var em = EncryptionMethod.NONE;
         var aesKeyStrength = AesKeyStrength.KEY_STRENGTH_128;
-        if (!profile.getPassword().isEmpty()) {
-            em = switch (profile.getEncryptionMethod()) {
+        if (!profile.getCompress().getPassword().isEmpty()) {
+            em = switch (profile.getCompress().getEncryptionMethod()) {
                 case 1 -> EncryptionMethod.ZIP_STANDARD;
                 case 2 -> EncryptionMethod.ZIP_STANDARD_VARIANT_STRONG;
                 case 3 -> EncryptionMethod.AES;
@@ -130,15 +130,15 @@ public class Compress {
                     aesKeyStrength = AesKeyStrength.KEY_STRENGTH_256;
                     yield EncryptionMethod.AES;
                 }
-                default -> throw new IllegalStateException("Unexpected value: " + profile.getEncryptionMethod());
+                default -> throw new IllegalStateException("Unexpected value: " + profile.getCompress().getEncryptionMethod());
             };
         }
-        Files.createDirectories(Paths.get("", profile.getCompressDir()));
+        Files.createDirectories(Paths.get("", profile.getCompress().getCompressDir()));
 
-        return packageToZip(Paths.get(profile.getCompressDir(), name + ".zip").toString(),
+        return packageToZip(Paths.get(profile.getCompress().getCompressDir(), name + ".zip").toString(),
                 Paths.get(name, profile.getRootDir()),
-                profile.getPassword(), em, aesKeyStrength,
-                profile.getCompressSplitSize(), getCompLevel());
+                profile.getCompress().getPassword(), em, aesKeyStrength,
+                profile.getCompress().getCompressSplitSize(), getCompLevel());
     }
 
     /**
@@ -147,7 +147,7 @@ public class Compress {
      * @return 解析后的压缩等级
      */
     private CompressionLevel getCompLevel() {
-        return switch (profile.getCompressionLevel()) {
+        return switch (profile.getCompress().getCompressionLevel()) {
             case 1 -> CompressionLevel.NO_COMPRESSION;
             case 2 -> CompressionLevel.FASTEST;
             case 3 -> CompressionLevel.FAST;
