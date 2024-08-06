@@ -96,6 +96,15 @@ public class Profile {
      * 是否转换成 PDF
      */
     private Boolean convertPdf = false;
-
-
+    /**
+     * 是否启用压缩任务进度条
+     */
+    private Boolean compressProgressBarVisible = true;
+    /**
+     * <p> 压缩任务进度条实现，由于 System.out.print(); 有性能问题，所以默认使用 log.info(); 实现。
+     * </p>
+     * <p>1:log.info(); 使用此实现时每次更新都是新的一行<p/>
+     * <p>2:System.out.print();</p>
+     */
+    private Integer compressProgressBarImpl = 1;
 }
