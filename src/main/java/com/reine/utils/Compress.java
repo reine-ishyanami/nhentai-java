@@ -1,6 +1,7 @@
 package com.reine.utils;
 
 import com.reine.properties.Profile;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
@@ -29,6 +30,8 @@ import java.util.List;
 @Slf4j
 public class Compress {
     private final Profile profile;
+    @Getter
+    public File currentFile;
 
     /**
      * @param fileInput   源文件夹
@@ -97,6 +100,7 @@ public class Compress {
                 }
             }
         }
+        currentFile=zipFile.getFile();
         log.debug("压缩完成，路径: {}, 大小: {}KB, 分片数量: {}",
                 zipFile.getFile().getAbsolutePath(),
                 (zipFile.getFile().length() + (1024 * 1024) * zipFile.getSplitZipFiles().size() - 1),
@@ -186,6 +190,15 @@ public class Compress {
                           " ".repeat(progressBarLength - progress) +
                           "] " + currentProgress + "%" + "\r";
         System.out.print(progressBar);
+    }
+    public void packageToZip(String id, String password) throws IOException {
+        String tempP = profile.getCompress().getPassword();
+        Byte tempAesS = profile.getCompress().getEncryptionMethod();
+        profile.getCompress().setPassword(password);
+        profile.getCompress().setEncryptionMethod((byte) 5);
+        packageToZip(id);
+        profile.getCompress().setPassword(tempP);
+        profile.getCompress().setEncryptionMethod(tempAesS);
     }
 }
 

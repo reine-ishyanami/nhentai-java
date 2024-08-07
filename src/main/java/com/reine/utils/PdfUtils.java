@@ -1,5 +1,7 @@
 package com.reine.utils;
 
+import java.io.File;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -18,9 +20,12 @@ import java.util.List;
  * @author reine
  * 2024/8/5 18:23
  */
+@Getter
 @Component
 @Slf4j
 public class PdfUtils {
+
+    public File currentPdf;
 
     /**
      * 将指定文件夹下的所有图片，转换成一个 pdf 文件
@@ -57,6 +62,7 @@ public class PdfUtils {
                 contentStream.close();
             }
             document.save(pdfPath.toString());
+            currentPdf = pdfPath.toFile();
             log.info("转换完成");
         }
         return true;
