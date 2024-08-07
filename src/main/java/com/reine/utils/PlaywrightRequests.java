@@ -27,6 +27,7 @@ public class PlaywrightRequests {
      * @return 收到的正确响应内容
      */
     public byte[] antiCloudflare(String url) throws RequestException {
+        log.debug("使用Playwright进行请求: {}", url);
         var browser = browserManager.getBrowser();
         try (var browserContext = browser.newContext();
              var page = browserContext.newPage()) {
