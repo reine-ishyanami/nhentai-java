@@ -11,11 +11,23 @@
 2. run
 
    ```bash
-   java -jar build/libs/hentai-downloader-0.0.1.jar
+   java -jar build/libs/nhentai-java-1.0-SNAPSHOT.jar
    ```
 
-3. download
+3. help
+
+   ```bash
+   shell:>help
+   ```
+   
+4. download
 
    ```bash
    shell:>download --name xxx
    ```
+
+5. convert
+
+	```bash
+	shell:>convert --path x --name y
+	```
