@@ -34,7 +34,6 @@ import java.util.concurrent.Executors;
  * @author reine
  * 2024/7/18 15:25
  */
-@RequiredArgsConstructor
 @Slf4j
 public class HttpClientRequests {
 

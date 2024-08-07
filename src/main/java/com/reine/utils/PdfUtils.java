@@ -28,7 +28,6 @@ public class PdfUtils {
      * @param overwrite 是否覆盖原有文件
      * @return 是否成功
      */
-    @Timer
     public boolean convertToPdf(Path filePath, Path pdfPath, boolean overwrite) throws IOException {
         // 创建 pdf 文件
         if (pdfPath.toFile().exists() && !overwrite) {

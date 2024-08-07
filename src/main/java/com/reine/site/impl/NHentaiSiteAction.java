@@ -94,11 +94,14 @@ public class NHentaiSiteAction implements SiteAction {
         return failList;
     }
 
+    @Timer
     @Override
     public boolean compress() throws IOException {
         return compress.packageToZip(hentaiName);
     }
 
+
+    @Timer
     @Override
     public boolean convertToPdf(Boolean overwrite) throws IOException {
         return pdfUtils.convertToPdf(hentaiPath, Path.of(profile.getPdf().getDir(), hentaiName+".pdf"), overwrite);

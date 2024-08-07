@@ -31,12 +31,10 @@ public class AppConfiguration {
     }
 
     @PostConstruct
-    public void init() {
-        try {
-            // 创建 pdf 文件夹
+    public void init() throws IOException {
+        // 创建 pdf 文件夹
+        if (profile.getPdf().getEnable()) {
             Files.createDirectories(Paths.get(profile.getPdf().getDir()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

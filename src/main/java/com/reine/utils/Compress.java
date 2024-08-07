@@ -88,12 +88,12 @@ public class Compress {
         else zipFile.addFiles(allFileList, zipParameters);
         if (profile.getCompress().getProgressVisible()) {
             var progressMonitor = zipFile.getProgressMonitor();
+            int process = 0;
             while (!progressMonitor.getState().equals(ProgressMonitor.State.READY)) {
-                printProgressBar(progressMonitor.getPercentDone());
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                int percentDone = progressMonitor.getPercentDone();
+                if (percentDone > process) {
+                    printProgressBar(percentDone);
+                    process = percentDone;
                 }
             }
         }
@@ -142,7 +142,8 @@ public class Compress {
                     aesKeyStrength = AesKeyStrength.KEY_STRENGTH_256;
                     yield EncryptionMethod.AES;
                 }
-                default -> throw new IllegalStateException("Unexpected value: " + profile.getCompress().getEncryptionMethod());
+                default ->
+                        throw new IllegalStateException("Unexpected value: " + profile.getCompress().getEncryptionMethod());
             };
         }
         Files.createDirectories(Paths.get("", profile.getCompress().getDir()));
@@ -181,9 +182,9 @@ public class Compress {
         var progressBarLength = 50; // 进度条长度
         var progress = (int) ((currentProgress / (double) 100) * progressBarLength);
         var progressBar = "\r压缩进度：[" +
-                "#".repeat(progress) +
-                " ".repeat(progressBarLength - progress) +
-                "] " + currentProgress + "%" + "\r";
+                          "#".repeat(progress) +
+                          " ".repeat(progressBarLength - progress) +
+                          "] " + currentProgress + "%" + "\r";
         System.out.print(progressBar);
     }
 }

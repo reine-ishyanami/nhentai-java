@@ -13,6 +13,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "download.config")
 public class Profile {
     /**
+     * 打包相关参数
+     */
+    private final Compress compress = new Compress();
+
+    /**
+     * 生成 pdf 相关参数
+     */
+    private final Pdf pdf = new Pdf();
+
+    /**
      * 文件后缀 TODO
      */
     private String suffix = "jpg";
@@ -32,16 +42,6 @@ public class Profile {
      * 下载根路径
      */
     private String rootDir = ".";
-
-    /**
-     * 打包相关参数
-     */
-    private final Compress compress = new Compress();
-
-    /**
-     * 生成 pdf 相关参数
-     */
-    private final Pdf pdf = new Pdf();
 
     @Data
     public static class Compress{
