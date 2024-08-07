@@ -44,7 +44,7 @@ public class Profile {
     private String rootDir = ".";
 
     @Data
-    public static class Compress{
+    public static class Compress {
         /**
          * 是否开启
          */
@@ -102,13 +102,13 @@ public class Profile {
          */
         private Integer level = 5;
         /**
-         *  是否开启压缩进度条
+         * 是否开启压缩进度条
          */
         private Boolean progressVisible = false;
     }
 
     @Data
-    public static class Pdf{
+    public static class Pdf {
         /**
          * 存放 pdf 的路径
          */

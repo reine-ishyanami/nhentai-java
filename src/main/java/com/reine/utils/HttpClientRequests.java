@@ -4,7 +4,6 @@ import com.reine.entity.FailResult;
 import com.reine.entity.HentaiStore;
 import com.reine.properties.Profile;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
@@ -49,7 +48,7 @@ public class HttpClientRequests {
     /**
      * 创建一个关闭SSL的httpclient
      *
-     * @return
+     * @return httpclient
      */
     private HttpClient httpClientWithoutSSL() {
         try {
@@ -85,8 +84,8 @@ public class HttpClientRequests {
     /**
      * 异步下载文件
      *
-     * @param hentaiStore
-     * @return
+     * @param hentaiStore 单页hentai的下载与存放信息
+     * @return 未来任务
      */
     public CompletableFuture<Void> downloadImage(HentaiStore hentaiStore, int retryCount) {
         log.debug("开始下载文件: {}", hentaiStore.url());
