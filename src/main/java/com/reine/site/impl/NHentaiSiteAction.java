@@ -1,6 +1,5 @@
 package com.reine.site.impl;
 
-import com.microsoft.playwright.Locator;
 import com.reine.annotation.Timer;
 import com.reine.entity.FailResult;
 import com.reine.entity.HentaiDetail;
@@ -8,10 +7,15 @@ import com.reine.entity.HentaiHref;
 import com.reine.entity.HentaiStore;
 import com.reine.properties.Profile;
 import com.reine.site.SiteAction;
-import com.reine.utils.*;
+import com.reine.utils.Compress;
+import com.reine.utils.HttpClientRequests;
+import com.reine.utils.PdfUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -19,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
@@ -37,10 +42,6 @@ public class NHentaiSiteAction implements SiteAction {
     private final Profile profile;
 
     private final HttpClientRequests requests;
-
-    private final PlaywrightRequests playwright;
-
-    private final BrowserManager browserManager;
 
     private final PdfUtils pdfUtils;
 
@@ -65,10 +66,10 @@ public class NHentaiSiteAction implements SiteAction {
         hentaiName = name;
         final var url = "https://nhentai.net/search/?q=%s".formatted(name);
         log.info("搜索中 {}", url);
-        var rsp1 = playwright.antiCloudflare(url);
+        var rsp1 = requests.requestPageContent(url);
         List<HentaiHref> hentaiHrefs = listHentaiGalleries(new String(rsp1, StandardCharsets.UTF_8));
         HentaiHref target = hentaiHrefs.stream().filter(hentaiHref -> pattern.matcher(hentaiHref.title()).find()).findFirst().orElseThrow(() -> new RuntimeException("not found"));
-        var rsp2 = playwright.antiCloudflare(target.href());
+        var rsp2 = requests.requestPageContent(target.href());
         hentaiDetail = getHentaiDetail(new String(rsp2, StandardCharsets.UTF_8));
         return hentaiDetail;
     }
@@ -114,17 +115,14 @@ public class NHentaiSiteAction implements SiteAction {
      * @return hentai列表
      */
     private List<HentaiHref> listHentaiGalleries(String html) {
-        var browser = browserManager.getBrowser();
-        try (var browserContext = browser.newContext(); var page = browserContext.newPage()) {
-            page.setContent(html);
-            var resList = new ArrayList<HentaiHref>();
-            for (Locator locator : page.locator(".gallery").all()) {
-                var href = locator.locator("a").getAttribute("href");
-                var text = locator.locator(".caption").innerText();
-                resList.add(new HentaiHref("https://nhentai.net%s".formatted(href), text));
-            }
-            return resList;
+        Document doc = Jsoup.parse(html);
+        var resList = new ArrayList<HentaiHref>();
+        for (Element gallery : doc.body().getElementsByClass("gallery")) {
+            var href = gallery.getElementsByTag("a").attr("href");
+            var text = gallery.getElementsByClass("caption").text();
+            resList.add(new HentaiHref("https://nhentai.net%s".formatted(href), text));
         }
+        return resList;
     }
 
     /**
@@ -134,21 +132,20 @@ public class NHentaiSiteAction implements SiteAction {
      * @return hentai详细信息
      */
     private HentaiDetail getHentaiDetail(String html) {
-        var browser = browserManager.getBrowser();
-        try (var browserContext = browser.newContext(); var page = browserContext.newPage()) {
-            page.setContent(html);
-            var srcUrl = page.locator("#cover").locator("img").getAttribute("data-src");
-            String[] split = srcUrl.split("/");
-            var gallery = split[split.length - 2];
-            var resList = new ArrayList<String>();
-            for (Locator div : page.locator("#thumbnail-container").locator(".thumbs").locator(".thumb-container").all()) {
-                srcUrl = div.locator("img").getAttribute("data-src");
-                split = srcUrl.split("/");
-                String[] img = split[split.length - 1].split("\\.");
-                String first = img[0].replace("t", "");
-                resList.add("%s.%s".formatted(first, img[1]));
-            }
-            return new HentaiDetail(gallery, resList);
+        Document doc = Jsoup.parse(html);
+        var srcUrl = Objects.requireNonNull(doc.getElementById("cover"))
+                .getElementsByTag("img").attr("data-src");
+        String[] split = srcUrl.split("/");
+        var gallery = split[split.length - 2];
+        var resList = new ArrayList<String>();
+        for (Element thumbs : Objects.requireNonNull(doc.getElementById("thumbnail-container"))
+                .getElementsByClass("thumbs").getFirst().getElementsByClass("thumb-container")) {
+            srcUrl = thumbs.getElementsByTag("img").attr("data-src");
+            split = srcUrl.split("/");
+            String[] img = split[split.length - 1].split("\\.");
+            String first = img[0].replace("t", "");
+            resList.add("%s.%s".formatted(first, img[1]));
         }
+        return new HentaiDetail(gallery, resList);
     }
 }

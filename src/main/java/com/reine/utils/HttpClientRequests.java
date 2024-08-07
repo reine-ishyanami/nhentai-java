@@ -129,6 +129,20 @@ public class HttpClientRequests {
                 });
     }
 
+    public byte[] requestPageContent(String url) {
+        log.debug("开始请求页面内容: {}", url);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
+                .GET()
+                .build();
+        try {
+            return client.send(request, HttpResponse.BodyHandlers.ofByteArray()).body();
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * 向文件中写入二进制信息
      *

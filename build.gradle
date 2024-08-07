@@ -31,7 +31,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation 'org.springframework.shell:spring-shell-starter'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation("com.microsoft.playwright:playwright:1.45.0")  // playwright
+    implementation 'org.jsoup:jsoup:1.18.1'
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     implementation('net.lingala.zip4j:zip4j:2.11.5')
